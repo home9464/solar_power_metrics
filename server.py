@@ -42,14 +42,13 @@ def get_inverter_data(slave_id):
         time.sleep(0.1)
         volts = instrument.read_register(257, 0) / 10.0
         
-        # Block 2: Power Stats
+        # Block 2: Load Power Consumption Stats
         time.sleep(0.1)
         load_w = instrument.read_register(539, 0) # 0x21B
         
+        # Block 3: PV Power Generation Stats
         time.sleep(0.1)
-        # Register 546 (0x222) is the standard location for PV Watts
-        # some modern inverters report PV power in 10W increments rather than 1W increments.
-        pv_w = instrument.read_register(546, 0) 
+        pv_w = instrument.read_register(546, 0) # 0x222
         
         return {
             "status": "online",
