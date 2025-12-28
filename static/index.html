@@ -238,12 +238,11 @@
 
                 // Parse the SystemSummary JSON
                 const data = await response.json();
-
                 // --- MAP JSON FIELDS TO UI ---
 
                 // 1. Solar: Convert Watts to kW
                 // field: total_solar_watts
-                const solarKw = (data.total_solar_kw || 0);
+                const solarKw = (data.total_pv_kw || 0);
                 document.getElementById('solar-val').innerText = solarKw.toFixed(2) + ' kW';
 
                 // 2. Load (Tesla): Convert Watts to kW
