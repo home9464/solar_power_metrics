@@ -1,6 +1,9 @@
 ```bash
 solar_power_metrics
 
+
+sudo usermod -a -G dialout $USER
+
 # edit
 sudo systemctl edit --full solar.service
 
