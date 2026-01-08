@@ -8,7 +8,7 @@ from typing import Optional, Dict, Any, Union
 
 # --- CONFIGURATION ---
 # The IP and port where your FastAPI server is running
-SERVER_URL = "http://192.168.68.99:8000/metrics" 
+#SERVER_URL = "http://192.168.68.99:8000/metrics" 
 SERVER_URL = "http://127.0.0.1:8000/test"
 # Time in seconds to show each metric before cycling
 CYCLE_TIME = 4 
