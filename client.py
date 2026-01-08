@@ -123,11 +123,9 @@ def main():
     while True:
         summary = get_system_summary()
         if summary is None:
-            if seg is not None:
-                seg.text = "ERROR: 0"
-            print("[FAIL]")
+            print("[Error]")
             time.sleep(5)
-        elif summary:
+        else:
             batt = int(summary['avg_battery_capacity_percentage'])
             pv = summary['total_pv_kw']
             load = summary['total_load_kw']
