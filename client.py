@@ -2,7 +2,7 @@ import re
 import requests
 import time
 from luma.led_matrix.device import max7219
-from luma.core.interface.serial import spi
+from luma.core.interface.serial import spi, noop
 from luma.core.virtual import sevensegment
 
 # --- CONFIGURATION ---
@@ -13,8 +13,8 @@ CYCLE_TIME = 4
 
 # --- HARDWARE SETUP ---
 try:
-    serial = spi(port=0, device=0, gpio_DC=None, gpio_RST=None)
-    device = max7219(serial, cascaded=2)
+    serial = spi(port=0, device=0, gpio=noop())
+    device = max7219(serial, cascaded=1)  # 1 display. 
     seg = sevensegment(device)
     # Set brightness (0-255)
     device.contrast(80) 
