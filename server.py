@@ -2,7 +2,7 @@ import uvicorn
 import asyncio
 import minimalmodbus
 import time
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import List, Optional
@@ -95,6 +95,8 @@ async def get_all_metrics():
             else:
                 results.append(SolarData(inverter_id=inv_id, status="offline"))
     online = [d for d in results if d.status == "online"]
+    if not online:
+        raise HTTPException(status_code=503, detail="No online inverters")
     total_load = sum(d.load_power_kw for d in online) if online else 0
     total_pv = sum(d.pv_power_kw for d in online) if online else 0
     avg_soc = (sum(d.battery_capacity_percentage for d in online) / len(online)) if online else 0

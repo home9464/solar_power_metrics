@@ -45,9 +45,6 @@ def get_system_summary() -> Union[Dict[str, Any], str, None]:
         response.raise_for_status() # Raises an exception for bad responses (4xx or 5xx) 
         return response.json()
     except requests.exceptions.HTTPError as e:
-        if e.response.status_code == 503:
-            print("Server returned 503: No online inverters.")
-            return "NO_INVERTERS"
         print(f"HTTP Error fetching data: {e}")
         return None
     except requests.exceptions.RequestException as e:
@@ -125,9 +122,10 @@ def main():
     error_message = "SERVER OFFLINE   " # 16 chars
     while True:
         summary = get_system_summary()
-        if summary == "NO_INVERTERS":
-            seg.text = "FAIL           "
-            print("Displaying: [FAIL           ]")
+        if summary is None:
+            if seg is not None:
+                seg.text = "FAIL           "
+            print("[FAIL           ]")
             time.sleep(5)
         elif summary:
             batt = int(summary['avg_battery_capacity_percentage'])
