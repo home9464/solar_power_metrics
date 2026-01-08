@@ -10,7 +10,7 @@ def main():
         device = max7219(serial, cascaded=1)  # 1 display. 
         seg = sevensegment(device)
         # Set brightness (0-255)
-        device.contrast(10) 
+        device.contrast(255) 
         print("LED Matrix initialized.")
         print("Displaying time (Ctrl+C to stop)...")
         
