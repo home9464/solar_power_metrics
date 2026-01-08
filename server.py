@@ -69,7 +69,7 @@ def get_inverter_data(slave_id):
             "volts": volts,
             "load_kw": round(load_w / 1000, 3),
             "pv_kw": round(pv_w / 100, 3), 
-            "pv_today_kwh": round(pv_today_raw / 10, 2) # e.g., 341 becomes 34.1
+            "pv_today_kwh": round(pv_today_raw / 100, 2) # e.g., 341 becomes 3.41
         }
     except Exception as e:
         err = f"Error reading inverter {slave_id}: {e}"
