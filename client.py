@@ -7,7 +7,8 @@ from luma.core.virtual import sevensegment
 
 # --- CONFIGURATION ---
 # The IP and port where your FastAPI server is running
-SERVER_URL = "http://192.168.68.99:8000/metrics" 
+#SERVER_URL = "http://192.168.68.99:8000/metrics" 
+SERVER_URL = "http://192.168.68.99:8000/test" 
 # Time in seconds to show each metric before cycling
 CYCLE_TIME = 4 
 
@@ -26,7 +27,17 @@ except Exception as e:
 
 # --- FUNCTIONS ---
 def get_system_summary():
-    """Fetches the SystemSummary data from the server."""
+    """Fetches the SystemSummary data from the server.
+    
+    example data = {
+        'total_load_kw': 2.1, 
+        'total_pv_kw': 5.5, 
+        'avg_battery_capacity_percentage': 20.9, 
+        'total_pv_today_kwh': 23.6, 
+        'details': []
+    }
+
+    """
     try:
         response = requests.get(SERVER_URL, timeout=2)
         response.raise_for_status() # Raises an exception for bad responses (4xx or 5xx) 
@@ -41,21 +52,13 @@ def get_system_summary():
         print(f"Error fetching data: {e}")
         return None
 
+def format_power(val):
+    if val >= 10:
+        return f"{val:2.0f}" # "12"
+    else:
+        return f"{val:3.1f}" # "9.8" or "0.5"
 
-def format_for_display(val:float):
-    # This regex finds up to 4 digits and includes the dot if it exists
-    # It stops exactly at 4 digits, regardless of where the dot is.
-    match = re.search(r'^\d?\.?\d?\.?\d?\.?\d?', str(val).replace(' ', ''))
-    truncated = match.group(0)
-    
-    # Calculate digit count (ignoring the dot) to determine padding
-    digit_count = len(truncated.replace('.', ''))
-    
-    # Add leading spaces based on digit count (targeting width of 4)
-    padding = " " * (4 - digit_count)
-    return padding + truncated
 
-# --- MAIN LOOP ---
 def main():
     """
     Main loop to fetch data and display combined metrics on the display.
@@ -74,20 +77,23 @@ def main():
             time.sleep(5)
         elif summary:
             # Get float values from the summary
-            solar_watts = summary.get('total_solar_kw', 0.0)
-            load_watts = summary.get('total_load_kw', 0.0)
-            avg_soc = summary.get('avg_battery_capacity_percentage', 0.0)
-            total_daily_kwh = summary.get('total_daily_generation_kwh', 0.0)
-
-            # Format each value using the new dynamic formatter
-            pv_str = format_for_display(solar_watts)
-            load_str = format_for_display(load_watts)
-            battery_str = format_for_display(avg_soc)
-            daily_str = format_for_display(total_daily_kwh)
-
-            display_text = f"{pv_str}{load_str}{battery_str}{daily_str}"
-            seg.text = display_text
-            print(f"Displaying: [{display_text}]")
+            print(summary)
+            # Assuming 'data' is the JSON response from your FastAPI server
+            batt = int(summary['avg_battery_capacity_percentage'])
+            pv = summary['total_pv_kw']
+            load = summary['total_load_kw']
+            # 1. Battery: 2 digits rounded/truncated
+            batt_str = f"{batt:02d}"
+            # 2. PV & Load: 2 digits wide
+            # We use :2g or custom logic to handle "12" vs "9.8" 
+            pv_str = format_power(pv)
+            load_str = format_power(load)
+            # Combine with spaces
+            # Resulting string example: "20 0.5 12"
+            display_string = f"{batt_str} {pv_str} {load_str}"
+            #display_text = f"{battery_reamining_percentage}"
+            seg.text = display_string
+            print(f"Displaying: [{display_string}]")
             time.sleep(2) # Refresh every 2 seconds
             
         else:
