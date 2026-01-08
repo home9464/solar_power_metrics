@@ -29,9 +29,7 @@ class SystemSummary(BaseModel):
 
 app = FastAPI()
 lock = asyncio.Lock()
-
 instrument = None
-
 try:
     instrument = minimalmodbus.Instrument(PORT, 1)
     instrument.serial.baudrate = 9600
@@ -43,27 +41,21 @@ except Exception as exp:
 def get_inverter_data(slave_id):
     if instrument is None:
         return {"status": "offline"}
-        
     try:
         instrument.address = slave_id
-        
         # Battery Stats
         soc = instrument.read_register(256, 0)
         time.sleep(0.1)
         volts = instrument.read_register(257, 0) / 10.0
-        
         # Load Power
         time.sleep(0.1)
         load_w = instrument.read_register(539, 0) 
-        
         # PV Power (Live) - Scale / 100 based on your scan
         time.sleep(0.1)
         pv_w = instrument.read_register(546, 0) 
-        
         # Daily PV Generation - Using Register 566
         time.sleep(0.1)
         pv_today_raw = instrument.read_register(540, 0)
-
         return {
             "status": "online",
             "soc": soc,
