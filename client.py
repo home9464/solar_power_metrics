@@ -124,8 +124,8 @@ def main():
         summary = get_system_summary()
         if summary is None:
             if seg is not None:
-                seg.text = "FAIL           "
-            print("[FAIL           ]")
+                seg.text = "ERROR: 0"
+            print("[FAIL]")
             time.sleep(5)
         elif summary:
             batt = int(summary['avg_battery_capacity_percentage'])
