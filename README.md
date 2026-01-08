@@ -112,3 +112,25 @@ sudo systemctl start solar_metrics_client
 sudo systemctl edit --full solar_metrics_client
 ```
 
+
+the server returns a dict 
+
+{
+            "status": "online",
+            "soc": soc,
+            "volts": volts,
+            "load_kw": round(load_w / 1000, 3),
+            "pv_kw": round(pv_w / 100, 3), 
+            "pv_today_kwh": round(pv_today_raw / 10, 2) # e.g., 341 becomes 34.1
+        }
+
+for each inverter. we have two interters. now I want the client shows "useable time" based on current battery capacity and current load_kw. The battery has a capacity of 37.5kwh, and the inverter will shutdown when the battery capacity is below 10%.
+
+so the client should calculate the useable time based on the current battery capacity and current load_kw. and show it on the display.
+
+it should alternatively show current content and the new (batter_percentage useable_time). batter_percentage occupy 2 digits. follow by space. then useable_time occupy 5 digits to show hhh.mm (hours and mins left before depletion)
+it could show 5.40 for 5 hrs 40mins or 500.15 for 500 hrs 15 mins.
+
+
+
+

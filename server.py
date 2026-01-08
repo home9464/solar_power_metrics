@@ -11,6 +11,10 @@ from typing import List, Optional
 PORT = '/dev/ttyACM0'
 INVERTER_IDS = [1, 2] 
 
+# Battery Constants
+BATTERY_FULL_CAPACITY_KWH = 37.5  # total capacity of the battery pack
+MIN_BATTERY_PERCENTAGE_USABLE = 10  # min percentage of bettery usable capacity 
+
 class SolarData(BaseModel):
     inverter_id: int
     status: str
@@ -25,6 +29,8 @@ class SystemSummary(BaseModel):
     total_pv_kw: float
     avg_battery_capacity_percentage: float
     total_pv_today_kwh: float
+    battery_full_capacity_kwh: float
+    min_battery_percentage_usable: int
     details: List[SolarData]
 
 app = FastAPI()
@@ -88,18 +94,18 @@ async def get_all_metrics():
                 await asyncio.sleep(0.2)
             else:
                 results.append(SolarData(inverter_id=inv_id, status="offline"))
-
     online = [d for d in results if d.status == "online"]
     total_load = sum(d.load_power_kw for d in online) if online else 0
     total_pv = sum(d.pv_power_kw for d in online) if online else 0
     avg_soc = (sum(d.battery_capacity_percentage for d in online) / len(online)) if online else 0
     total_pv_today = sum(d.pv_power_today_kwh for d in online if d.pv_power_today_kwh) if online else 0
-
     return SystemSummary(
         total_load_kw=round(total_load, 3),
         total_pv_kw=round(total_pv, 3),
         avg_battery_capacity_percentage=round(avg_soc, 1),
         total_pv_today_kwh=round(total_pv_today, 2),
+        battery_full_capacity_kwh=BATTERY_FULL_CAPACITY_KWH,
+        min_battery_percentage_usable=MIN_BATTERY_PERCENTAGE_USABLE,
         details=results
     )
 
@@ -115,6 +121,8 @@ async def get_all_metrics():
         total_pv_kw=round(total_pv_kw, 1),
         avg_battery_capacity_percentage=round(avg_battery_capacity_percentage, 1),
         total_pv_today_kwh=round(total_pv_today_kwh, 1),
+        battery_full_capacity_kwh=BATTERY_FULL_CAPACITY_KWH,
+        min_battery_percentage_usable=MIN_BATTERY_PERCENTAGE_USABLE,
         details=[]
     )
 
