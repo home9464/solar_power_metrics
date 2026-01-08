@@ -64,21 +64,15 @@ def main():
     Main loop to fetch data and display combined metrics on the display.
     """
     print("Starting Solar Monitor client... Press Ctrl+C to exit.")
-    
     # Text to show when data can't be fetched
     error_message = "SERVER OFFLINE   " # 16 chars
-    
     while True:
         summary = get_system_summary()
-        
         if summary == "NO_INVERTERS":
             seg.text = "FAIL           "
             print("Displaying: [FAIL           ]")
             time.sleep(5)
         elif summary:
-            # Get float values from the summary
-            print(summary)
-            # Assuming 'data' is the JSON response from your FastAPI server
             batt = int(summary['avg_battery_capacity_percentage'])
             pv = summary['total_pv_kw']
             load = summary['total_load_kw']
@@ -93,9 +87,8 @@ def main():
             display_string = f"{batt_str} {pv_str} {load_str}"
             #display_text = f"{battery_reamining_percentage}"
             seg.text = display_string
-            print(f"Displaying: [{display_string}]")
+            print(f"Data: {summary}, Displaying: {display_string}")
             time.sleep(2) # Refresh every 2 seconds
-            
         else:
             # If fetch fails, show an error and retry after a shorter delay
             seg.text = error_message
