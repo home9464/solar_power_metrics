@@ -124,7 +124,7 @@ def main():
         summary = get_system_summary()
         if summary is None:
             if seg is not None:
-                seg.text = "0"
+                seg.text = "00 0.0 0.0"
             print("[Error]")
             time.sleep(5)
         else:
