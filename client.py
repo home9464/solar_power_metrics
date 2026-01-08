@@ -88,7 +88,7 @@ def main():
             #display_text = f"{battery_reamining_percentage}"
             seg.text = display_string
             print(f"Data: {summary}, Displaying: {display_string}")
-            time.sleep(2) # Refresh every 2 seconds
+            time.sleep(10) # Refresh every 10 seconds
         else:
             # If fetch fails, show an error and retry after a shorter delay
             seg.text = error_message
