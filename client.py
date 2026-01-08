@@ -148,12 +148,6 @@ def main():
                 seg.text = remaining_time_string
             print(f"{remaining_time_string}")
             time.sleep(CYCLE_TIME)
-        else:
-            # If fetch fails, show an error and retry after a shorter delay
-            if seg is not None:
-                seg.text = error_message
-            print(f"Error: [{error_message}]")
-            time.sleep(5) # Shorter sleep to retry connection faster
 
 if __name__ == "__main__":
     try:
