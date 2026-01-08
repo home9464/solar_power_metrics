@@ -30,6 +30,8 @@ class SystemSummary(BaseModel):
 app = FastAPI()
 lock = asyncio.Lock()
 
+instrument = None
+
 try:
     instrument = minimalmodbus.Instrument(PORT, 1)
     instrument.serial.baudrate = 9600
@@ -39,6 +41,9 @@ except Exception as exp:
     print(exp, "only /test is OK")
 
 def get_inverter_data(slave_id):
+    if instrument is None:
+        return {"status": "offline"}
+        
     try:
         instrument.address = slave_id
         
