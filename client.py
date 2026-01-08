@@ -125,7 +125,7 @@ def main():
         if summary is None:
             if seg is not None:
                 seg.text = "00 0.0 0.0"
-            print("[Error]")
+            print("Failed to fetch data from server. Retrying in 5 seconds...")
             time.sleep(5)
         else:
             batt = int(summary['avg_battery_capacity_percentage'])
