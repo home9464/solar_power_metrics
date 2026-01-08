@@ -3,6 +3,7 @@ import asyncio
 import minimalmodbus
 import time
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import List, Optional
 
@@ -118,6 +119,8 @@ async def get_all_metrics():
         total_pv_today_kwh=round(total_pv_today_kwh, 1),
         details=[]
     )
+
+app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
