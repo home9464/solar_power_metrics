@@ -46,6 +46,7 @@ def get_inverter_data(slave_id):
         # Battery Stats
         soc = instrument.read_register(256, 0)
         time.sleep(0.1)
+        # Battery Voltage
         volts = instrument.read_register(257, 0) / 10.0
         # Load Power
         time.sleep(0.1)
@@ -65,8 +66,8 @@ def get_inverter_data(slave_id):
             "pv_today_kwh": round(pv_today_raw / 10, 2) # e.g., 341 becomes 34.1
         }
     except Exception as e:
-        print(f"Error reading ID {slave_id}: {e}")
-        return {"status": "offline"}
+        err = f"Error reading inverter {slave_id}: {e}"
+        return {"error": err}
 
 @app.get("/metrics", response_model=SystemSummary)
 async def get_all_metrics():

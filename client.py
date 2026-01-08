@@ -58,7 +58,6 @@ def format_power(val):
     else:
         return f"{val:3.1f}" # "9.8" or "0.5"
 
-
 def main():
     """
     Main loop to fetch data and display combined metrics on the display.
