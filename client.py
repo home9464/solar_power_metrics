@@ -123,6 +123,8 @@ def main():
     while True:
         summary = get_system_summary()
         if summary is None:
+            if seg is not None:
+                seg.text = "0"
             print("[Error]")
             time.sleep(5)
         else:
