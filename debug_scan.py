@@ -9,7 +9,7 @@ def scan_inverter(instrument, address):
     try:
         instrument.address = address
         found_any = False
-        for reg in [261, 267, 269]:
+        for reg in range(500, 600):
             try:
                 val = instrument.read_register(reg, 0, functioncode=3)
                 if val > 0:
