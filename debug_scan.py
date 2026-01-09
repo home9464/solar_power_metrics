@@ -3,7 +3,7 @@ import time
 
 # Scan Inverter 1
 try:
-    instrument = minimalmodbus.Instrument('/dev/ttyACM0', 1)
+    instrument = minimalmodbus.Instrument('/dev/ttyACM0', 2)
     instrument.serial.baudrate = 9600
     instrument.serial.timeout = 0.5
     
