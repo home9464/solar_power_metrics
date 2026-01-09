@@ -34,7 +34,12 @@ class SystemSummary(BaseModel):
     details: List[SolarData]
 
 app = FastAPI()
-lock = asyncio.Lock()
+lock = None
+
+@app.on_event("startup")
+async def startup_event():
+    global lock
+    lock = asyncio.Lock()
 instrument = None
 try:
     instrument = minimalmodbus.Instrument(PORT, 1)
@@ -57,7 +62,7 @@ def get_inverter_data(slave_id):
         # Load Power
         time.sleep(0.1)
         load_w = instrument.read_register(539, 0) 
-        # PV Power (Live) - Calc: Volts (544) * Amps (528)
+        # PV Power (Live) - Calc: Volts (544) * Amps (528)/10
         time.sleep(0.1)
         pv_volts = instrument.read_register(544, 0)
         time.sleep(0.1)
