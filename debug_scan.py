@@ -18,5 +18,17 @@ try:
             # print(f"Reg {reg}: Error {e}")
             pass
         time.sleep(0.02)
+
+    print("\n--- Scanning Inverter 2 (Holding Registers 500-600) ---")
+    instrument.address = 2
+    for reg in range(500, 600):
+        try:
+            val = instrument.read_register(reg, 0, functioncode=3)
+            if val > 0:
+                print(f"Reg {reg}: {val}")
+        except Exception as e:
+            pass
+        time.sleep(0.02)
+
 except Exception as e:
     print(f"Main Error: {e}")
