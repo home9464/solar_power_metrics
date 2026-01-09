@@ -70,6 +70,7 @@ sudo systemctl edit --full solar.service
 
 ## 1. Create a system servce to read metrics from server
 ```bash
+git clone https://github.com/home9464/solar_power_metrics.git
 sudo nano /etc/systemd/system/solar_metrics_client.service
 ```
 
@@ -86,9 +87,9 @@ Wants=network-online.target
 User=pi
 # Adjust the path to where your site-packages actually live
 Environment=PYTHONPATH=/home/pi/.local/lib/python3.11/site-packages
-WorkingDirectory=/home/pi/solar_metrics_client
+WorkingDirectory=/home/pi/solar_power_metrics
 # Use 'which python3' in your terminal to confirm the path to python
-ExecStart=/usr/bin/python3 /home/pi/solar_metrics_client/client.py
+ExecStart=/usr/bin/python3 /home/pi/solar_power_metrics/client.py
 Restart=always
 RestartSec=10
 
