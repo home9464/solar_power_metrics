@@ -57,9 +57,12 @@ def get_inverter_data(slave_id):
         # Load Power
         time.sleep(0.1)
         load_w = instrument.read_register(539, 0) 
-        # PV Power (Live) - Scale / 100 based on your scan
+        # PV Power (Live) - Calc: Volts (544) * Amps (528)
         time.sleep(0.1)
-        pv_w = instrument.read_register(546, 0) 
+        pv_volts = instrument.read_register(544, 0)
+        time.sleep(0.1)
+        pv_amps = instrument.read_register(528, 0)
+        pv_w = pv_volts * pv_amps 
         # Daily PV Generation - Using Register 566
         time.sleep(0.1)
         pv_today_raw = instrument.read_register(540, 0)
@@ -68,7 +71,7 @@ def get_inverter_data(slave_id):
             "soc": soc,
             "volts": volts,
             "load_kw": round(load_w / 1000, 3),
-            "pv_kw": round(pv_w / 100, 3), 
+            "pv_kw": round(pv_w / 1000.0, 3), 
             "pv_today_kwh": round(pv_today_raw / 100, 2) # e.g., 341 becomes 3.41
         }
     except Exception as e:
