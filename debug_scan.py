@@ -16,7 +16,6 @@ def scan_inverter(instrument, address):
                     print(f"Reg {reg}: {val}")
                     found_any = True
             except Exception as e:
-                print(f"Reg {reg} error: {e}")
                 pass
             time.sleep(0.02)
             
