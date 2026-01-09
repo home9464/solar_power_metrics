@@ -71,6 +71,7 @@ sudo systemctl edit --full solar.service
 ## 1. Create a system servce to read metrics from server
 ```bash
 git clone https://github.com/home9464/solar_power_metrics.git
+pip install luma.led-matrix --break-system-packages
 sudo nano /etc/systemd/system/solar_metrics_client.service
 ```
 
