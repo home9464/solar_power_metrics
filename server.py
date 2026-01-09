@@ -61,7 +61,7 @@ def get_inverter_data(slave_id):
         time.sleep(0.1)
         pv_volts = instrument.read_register(544, 0)
         time.sleep(0.1)
-        pv_amps = instrument.read_register(528, 0)
+        pv_amps = instrument.read_register(528, 0) / 10.0
         pv_w = pv_volts * pv_amps 
         # Daily PV Generation - Using Register 566
         time.sleep(0.1)
