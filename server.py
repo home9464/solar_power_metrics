@@ -69,9 +69,9 @@ def get_inverter_data(slave_id):
         time.sleep(0.1)
         pv_volts = instrument.read_register(258, 0) * 0.1
  
-        # Daily PV Generation - Using Register 566
+        # Daily PV Generation - Reg 267 (0.1 kWh)
         time.sleep(0.1)
-        pv_today_raw = instrument.read_register(540, 0)
+        pv_today_raw = instrument.read_register(267, 0)
         return {
             "status": "online",
             "soc": soc,
@@ -79,7 +79,7 @@ def get_inverter_data(slave_id):
             "load_kw": round(load_w / 1000, 3),
             "pv_kw": round(pv_w / 1000.0, 3), 
             "battery_voltage": volts, # Added for clarity in response if needed
-            "pv_power_today_kwh": round(pv_today_raw / 100, 2) # e.g., 341 becomes 3.41
+            "pv_power_today_kwh": round(pv_today_raw / 10.0, 2) 
         }
     except Exception as e:
         err = f"Error reading inverter {slave_id}: {e}"
