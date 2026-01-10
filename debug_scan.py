@@ -5,7 +5,7 @@ import sys
 PORT = '/dev/ttyACM0'
 
 def scan_inverter(instrument, address):
-    print(f"\n--- Scanning Inverter {address} (Holding Registers 500-600) ---")
+    print(f"\n--- Scanning Inverter {address} (Holding Registers 200-600) ---")
     try:
         instrument.address = address
         found_any = False
