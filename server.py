@@ -62,12 +62,9 @@ def get_inverter_data(slave_id):
         # Load Power
         time.sleep(0.1)
         load_w = instrument.read_register(539, 0) 
-        # PV Power (Live) - Calc: Volts (544) * Amps (528)/10
+        # PV Power (Live) - Reg 549 (Watts)
         time.sleep(0.1)
-        pv_volts = instrument.read_register(544, 0)
-        time.sleep(0.1)
-        pv_amps = instrument.read_register(528, 0) / 10.0
-        pv_w = pv_volts * pv_amps 
+        pv_w = instrument.read_register(549, 0) 
         # Daily PV Generation - Using Register 566
         time.sleep(0.1)
         pv_today_raw = instrument.read_register(540, 0)
