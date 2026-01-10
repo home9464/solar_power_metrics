@@ -14,13 +14,19 @@ def scan_inverter(instrument, address):
             try:
                 val = instrument.read_register(reg, 0, functioncode=3)
                 if val > 0:
-                    # Highlight potential matches
                     suffix = ""
-                    if 170 <= val <= 180: suffix = " <--- Possible 17.6 kWh (x0.1)"
-                    if 1700 <= val <= 1800: suffix = " <--- Possible 17.6 kWh (x0.01)"
+                    # 17.6 kWh
+                    if 170 <= val <= 180: suffix += " [Possible YIELD 17.6]"
+                    if 1750 <= val <= 1770: suffix += " [Possible YIELD 17.6]"
+                    # 396 V
+                    if 390 <= val <= 400: suffix += " [Possible PV VOLT 396]"
+                    # 32 C
+                    if 30 <= val <= 34: suffix += " [Possible TEMP 32]"
                     
-                    print(f"Reg {reg}: {val}{suffix}")
-                    found_any = True
+                    # Only print if it matches a target or stands out
+                    if suffix or (200 <= reg <= 600): # Keep seeing old range too
+                        print(f"Reg {reg}: {val}{suffix}")
+                        found_any = True
             except Exception:
                 pass
             
