@@ -5,22 +5,30 @@ import sys
 PORT = '/dev/ttyACM0'
 
 def scan_inverter(instrument, address):
-    print(f"\n--- Scanning Inverter {address} (Holding Registers 200-600) ---")
+    print(f"\n--- Scanning Inverter {address} (Holding Registers 0-1200) ---")
     try:
         instrument.address = address
         found_any = False
-        for reg in range(200, 600):
+        # Extended range to find PV Today (17.6 -> 176, 1760, 17600)
+        for reg in range(0, 1200):
             try:
                 val = instrument.read_register(reg, 0, functioncode=3)
                 if val > 0:
-                    print(f"Reg {reg}: {val}")
+                    # Highlight potential matches
+                    suffix = ""
+                    if 170 <= val <= 180: suffix = " <--- Possible 17.6 kWh (x0.1)"
+                    if 1700 <= val <= 1800: suffix = " <--- Possible 17.6 kWh (x0.01)"
+                    
+                    print(f"Reg {reg}: {val}{suffix}")
                     found_any = True
-            except Exception as e:
+            except Exception:
                 pass
-            time.sleep(0.02)
+            
+            if reg % 50 == 0:
+                time.sleep(0.01)
             
         if not found_any:
-            print(f"No non-zero values found for Inverter {address} in range 500-600.")
+            print(f"No non-zero values found for Inverter {address}.")
             
     except Exception as e:
         print(f"Failed to scan Inverter {address}: {e}")
