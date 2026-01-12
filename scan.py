@@ -1,44 +1,40 @@
 import minimalmodbus
 import serial
 
-# --- CONFIGURATION ---
+# --- ADJUST THESE FOR YOUR INVERTER ---
 PORT = '/dev/ttyACM0'
-SLAVE_ADDRESS = 1  # Usually 1 by default for inverters
-BAUDRATE = 9600    # Common: 9600, 19200, or 115200
-# ---------------------
+SLAVE_ID = 1
 
-def read_inverter():
+# EXAMPLE: Settings for Sunsynk/Deye (Change these based on the table above)
+REG_BATTERY_SOC = 184  
+REG_PV_TODAY = 108
+FUNC_CODE = 3 # Try 3 or 4
+# --------------------------------------
+
+def read_solar():
+    instrument = minimalmodbus.Instrument(PORT, SLAVE_ID)
+    instrument.serial.baudrate = 9600
+    instrument.serial.timeout = 1
+    instrument.mode = minimalmodbus.MODE_RTU
+
     try:
-        # Initialize instrument
-        instrument = minimalmodbus.Instrument(PORT, SLAVE_ADDRESS)
+        # Read Battery SOC
+        # Some inverters require function code 4 (read_input_register)
+        soc = instrument.read_register(REG_BATTERY_SOC, functioncode=FUNC_CODE)
         
-        # Serial Port Settings
-        instrument.serial.baudrate = BAUDRATE
-        instrument.serial.bytesize = 8
-        instrument.serial.parity   = serial.PARITY_NONE
-        instrument.serial.stopbits = 1
-        instrument.serial.timeout  = 0.5  # Seconds
-        instrument.mode = minimalmodbus.MODE_RTU
-        
-        # Optional: Print debug info if having trouble
-        # instrument.debug = True
+        # Read PV Today (Assuming 0.1kWh scaling)
+        pv_today = instrument.read_register(REG_PV_TODAY, decimals=1, functioncode=FUNC_CODE)
 
-        print(f"--- Connecting to Inverter on {PORT} ---")
+        print(f"✅ Success!")
+        print(f"Battery Capacity: {soc}%")
+        print(f"Solar Generated Today: {pv_today} kWh")
 
-        # 1. Read Battery Capacity (%)
-        # Register 100 is a common placeholder; '0' decimals means it returns integer 0-100
-        battery_soc = instrument.read_register(100, functioncode=3)
-        
-        # 2. Read Total Energy Generated Today (kWh)
-        # Often stored as 'Value * 0.1'. 1 decimal divides the result by 10 automatically.
-        pv_energy_today = instrument.read_register(110, number_of_decimals=1, functioncode=3)
-
-        # Output Results
-        print(f"Battery Remained: {battery_soc}%")
-        print(f"Solar Energy Today: {pv_energy_today} kWh")
-
+    except minimalmodbus.IllegalRequestError:
+        print("❌ Error: Illegal Data Address.")
+        print(f"The inverter does not have a register at {REG_BATTERY_SOC}.")
+        print("Action: Check your manual for the 'Modbus RTU Register Map'.")
     except Exception as e:
-        print(f"Error reading from inverter: {e}")
+        print(f"❌ Communication Error: {e}")
 
 if __name__ == "__main__":
-    read_inverter()
+    read_solar()
