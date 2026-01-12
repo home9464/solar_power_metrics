@@ -1,39 +1,34 @@
 import minimalmodbus
-import serial
-import time
 
-# --- CONFIG ---
+# --- ECO-WORTHY FINAL CONFIG ---
 PORT = '/dev/ttyACM0'
 SLAVE_ID = 1
-BAUD = 9600 # Try 115200 if 9600 continues to fail
 
-def scan_registers(start, end):
+def read_eco_worthy_metrics():
     instrument = minimalmodbus.Instrument(PORT, SLAVE_ID)
-    instrument.serial.baudrate = BAUD
-    instrument.serial.timeout = 0.2  # Short timeout for scanning
+    instrument.serial.baudrate = 9600
+    instrument.serial.timeout = 0.5
     instrument.mode = minimalmodbus.MODE_RTU
-    
-    print(f"--- Scanning {PORT} (Baud: {BAUD}, ID: {SLAVE_ID}) ---")
-    print(f"Range: {start} to {end}\n")
 
-    found_any = False
-    for addr in range(start, end + 1):
-        for fc in [3, 4]: # Try both Holding and Input registers
-            try:
-                # We use read_register directly to check for a response
-                val = instrument.read_register(addr, functioncode=fc)
-                print(f"✅ [ADDR {addr}] FC{fc} returned: {val}")
-                found_any = True
-            except Exception:
-                # Silent skip for failed addresses
-                continue
+    try:
+        # 1. Battery Percentage (Register 256)
+        battery_soc = instrument.read_register(256, functioncode=3)
         
-        # Small sleep to prevent flooding the inverter's serial buffer
-        time.sleep(0.01)
+        # 2. Solar Energy Today (Register 275)
+        # Scaling for SRNE is usually 0.1 kWh
+        solar_today = instrument.read_register(275, decimals=1, functioncode=3)
+        
+        # 3. Solar Input Power (Register 263 - common on some models)
+        solar_watts = instrument.read_register(263, functioncode=3)
 
-    if not found_any:
-        print("❌ No registers responded in this range.")
-        print("Tip: If you get zero hits, swap your A and B wires and run again.")
+        print("-" * 30)
+        print(f"🔋 Battery Level:    {battery_soc}%")
+        print(f"☀️ Solar Today:     {solar_today} kWh")
+        print(f"⚡ Current PV Power: {solar_watts} W")
+        print("-" * 30)
+
+    except Exception as e:
+        print(f"Error reading metrics: {e}")
 
 if __name__ == "__main__":
-    scan_registers(250, 300)
+    read_eco_worthy_metrics()
