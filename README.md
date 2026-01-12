@@ -136,3 +136,229 @@ it could show 5.40 for 5 hrs 40mins or 500.15 for 500 hrs 15 mins.
 
 
 
+## Reference
+
+```
+#################################################################################################################################
+#                                   MODBUS
+#################################################################################################################################
+
+modbus:
+  - name: modbus_tcp
+    type: rtuovertcp
+    host: 192.168.1.30
+    port: 8888
+    sensors:
+#Load active power phase A
+      - name: Modbus_Inverter_Power
+        unit_of_measurement: W
+        scale: 1
+        slave: 1
+        address: 539
+        input_type: holding
+        
+#Battery level percentage
+      - name: Modbus_Inverter_BatteryLevel
+        unit_of_measurement: '%'
+        scale: 1
+        slave: 1
+        address: 256
+        input_type: holding
+
+#Last equalizing charge completion time
+      - name: Modbus_Inverter_BatteryLastEqualization
+        scale: 1
+        slave: 1
+        address: 61507
+        input_type: holding
+
+
+#Battery voltage
+      - name: Modbus_Inverter_BatteryV
+        unit_of_measurement: V
+        scale: 0.1
+        precision: 1
+        slave: 1
+        address: 257
+        input_type: holding
+        
+#PV panel 1 voltage 
+      - name: Modbus_Inverter_PV_voltage
+        unit_of_measurement: V
+        scale: 0.1
+        precision: 1
+        slave: 1
+        address: 263
+        input_type: holding
+        
+#PV panel 1 current 
+      - name: Modbus_Inverter_PV_current
+        unit_of_measurement: A
+        scale: 0.1
+        precision: 1
+        slave: 1
+        address: 264
+        input_type: holding
+        
+#PV panel 1 power
+      - name: Modbus_Inverter_PV_power
+        unit_of_measurement: W
+        scale: 1
+        slave: 1
+        address: 265
+        input_type: holding
+        
+#Total charge power, include charge power by mains and pv
+      - name: Modbus_Inverter_Charge_power
+        unit_of_measurement: W
+        scale: 1
+        slave: 1
+        address: 270
+        input_type: holding
+        
+#Charge state
+      - name: Modbus_Inverter_battery_chargestate
+        scale: 1
+        slave: 1
+        address: 267
+        input_type: holding
+
+#Current state of the machine
+      - name: Modbus_Inverter_Operation
+        scale: 1
+        slave: 1
+        address: 528
+        input_type: holding
+
+#Load side current phase A
+      - name: Modbus_Inverter_current
+        unit_of_measurement: A
+        scale: 0.1
+        precision: 1
+        slave: 1
+        address: 537
+        input_type: holding
+        
+#Battery side current when charging on mains
+      - name: Modbus_Inverter_Main_charge_current
+        unit_of_measurement: A
+        scale: 0.1
+        precision: 1
+        slave: 1
+        address: 542
+        input_type: holding
+        
+#Battery side current by PV charging
+      - name: Modbus_Inverter_PV_charge_current
+        unit_of_measurement: A
+        scale: 0.1
+        precision: 1
+        slave: 1
+        address: 548
+        input_type: holding
+
+#The total PV power generation of the day, applicable to the 2nd generation machines
+      - name: Modbus_Inverter_pv_daily_consumption
+        unit_of_measurement: kWh
+        scale: 0.1
+        precision: 1
+        slave: 1
+        address: 61487
+        input_type: holding
+
+#The total battery charge level (AH) of the day
+      - name: Modbus_Inverter_battery_charge_daily
+        unit_of_measurement: Ah
+        scale: 1
+        slave: 1
+        address: 61485
+        input_type: holding
+
+#The total battery discharge level (AH) of the day
+      - name: Modbus_Inverter_battery_discharge_daily
+        unit_of_measurement: Ah
+        scale: 1
+        slave: 1
+        address: 61486
+        input_type: holding
+
+#The total PV power generation of the day
+      - name: Modbus_Inverter_pv_daily_consumption
+        unit_of_measurement: kWh
+        scale: 0.1
+        precision: 1
+        slave: 1
+        address: 61487
+        input_type: holding
+
+#The total power consumption by load of the day
+      - name: Modbus_Inverter_load_daily_consumption
+        unit_of_measurement: kWh
+        scale: 0.1
+        precision: 1
+        slave: 1
+        address: 61485
+        input_type: holding
+        
+#Total running days
+      - name: Modbus_Inverter_uptime
+        unit_of_measurement: days
+        scale: 1
+        slave: 1
+        address: 61489
+        input_type: holding
+ 
+#Accumulated PV power generation
+      - name: Modbus_Inverter_PV_Generated
+        unit_of_measurement: kWh
+        state_class: total_increasing
+        scale: 0.1
+        precision: 1
+        slave: 1
+        address: 61496
+        input_type: holding
+ 
+#Power consumption by load from mains of today
+      - name: Modbus_Inverter_Main_load_power_daily
+        unit_of_measurement: kWh
+        scale: 0.1
+        precision: 1
+        slave: 1
+        address: 61501
+        input_type: holding
+
+#DC-DC heat sink temperature
+      - name: Modbus_Inverter_DCDC_temp
+        unit_of_measurement: '°C'
+        scale: 0.1
+        precision: 1
+        slave: 1
+        address: 544
+        input_type: holding
+
+#DC-AC heat sink temperature
+      - name: Modbus_Inverter_DCAC_temp
+        unit_of_measurement: '°C'
+        scale: 0.1
+        precision: 1
+        slave: 1
+        address: 545
+        input_type: holding
+
+#Translator heat sink tmperature
+      - name: Modbus_Inverter_translator_temp
+        unit_of_measurement: '°C'
+        scale: 0.1
+        precision: 1
+        slave: 1
+        address: 546
+        input_type: holding
+        
+#Load percentage phase A
+      - name: Modbus_Inverter_LoadRatio
+        unit_of_measurement: '%'
+        scale: 1
+        slave: 1
+        address: 543
+        input_type: holding
+```

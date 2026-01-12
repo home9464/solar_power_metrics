@@ -66,16 +66,16 @@ def get_inverter_data(slave_id):
         load_w = instrument.read_register(539, 0) 
         time.sleep(0.1)
 
-        # PV Power (Live) - Reg 261 (Watts)
-        pv_w = instrument.read_register(261, 0)
+        # PV Power (Live) - Reg 265 (Watts)
+        pv_w = instrument.read_register(265, 0)
         time.sleep(0.1)
         
-        # PV Voltage - Reg 258 (x0.1)
-        pv_volts = instrument.read_register(258, 0) * 0.1 
+        # PV Voltage - Reg 263 (x0.1)
+        pv_volts = instrument.read_register(263, 0) * 0.1 
         time.sleep(0.1)
 
-        # Daily PV Generation - Reg 267 (0.1 kWh)
-        pv_today_raw = instrument.read_register(267, 0) * 0.1
+        # Daily PV Generation - Reg 61487 (0.1 kWh)
+        pv_today_raw = instrument.read_register(61487, 0) * 0.1
         return {
             "status": "online",
             "soc": soc,
