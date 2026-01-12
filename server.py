@@ -19,10 +19,12 @@ class SolarData(BaseModel):
     inverter_id: int
     status: str
     battery_capacity_percentage: Optional[float] = None
-    load_power_kw: Optional[float] = None
-    pv_power_kw: Optional[float] = None
     battery_voltage: Optional[float] = None
+    pv_voltage: Optional[float] = None
+    pv_current: Optional[float] = None
+    pv_power_kw: Optional[float] = None
     pv_power_today_kwh: Optional[float] = None
+    load_power_kw: Optional[float] = None
 
 class SystemSummary(BaseModel):
     total_load_kw: float
@@ -73,6 +75,10 @@ def get_inverter_data(slave_id):
         # PV Voltage - Reg 263 (x0.1)
         pv_volts = instrument.read_register(263, 0) * 0.1 
         time.sleep(0.1)
+        
+        # PV Current - Reg 264 (x0.1)
+        pv_amps = instrument.read_register(264, 0) * 0.1
+        time.sleep(0.1)
 
         # Daily PV Generation - Reg 61487 (0.1 kWh)
         pv_today_raw = instrument.read_register(61487, 0) * 0.1
@@ -82,8 +88,10 @@ def get_inverter_data(slave_id):
             "volts": volts, # Battery Voltage
             "load_kw": round(load_w / 1000, 3),
             "pv_kw": round(pv_w / 1000.0, 3), 
-            "battery_voltage": volts, # Added for clarity in response if needed
-            "pv_power_today_kwh": round(pv_today_raw, 2) 
+            "battery_voltage": volts,
+            "pv_power_today_kwh": round(pv_today_raw, 2),
+            "pv_voltage": round(pv_volts, 1),
+            "pv_current": round(pv_amps, 1)
         }
     except Exception as e:
         err = f"Error reading inverter {slave_id}: {e}"
@@ -103,7 +111,9 @@ async def get_all_metrics():
                     load_power_kw=data["load_kw"],
                     pv_power_kw=data["pv_kw"],
                     battery_voltage=data["volts"],
-                    pv_power_today_kwh=data.get("pv_today_kwh")
+                    pv_power_today_kwh=data.get("pv_power_today_kwh"),
+                    pv_voltage=data.get("pv_voltage"),
+                    pv_current=data.get("pv_current")
                 ))
                 await asyncio.sleep(0.2)
             else:

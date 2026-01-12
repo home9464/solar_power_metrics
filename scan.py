@@ -23,6 +23,12 @@ def read_eco_worthy_metrics():
         
         # 3. Solar Input Power (Register 265)
         solar_watts = instrument.read_register(265, functioncode=3)
+        
+        # 4. PV Voltage (Register 263)
+        pv_volts = instrument.read_register(263, numberOfDecimals=1, functioncode=3)
+        
+        # 5. PV Current (Register 264)
+        pv_amps = instrument.read_register(264, numberOfDecimals=1, functioncode=3)
 
         print("=" * 35)
         print(f"       ECO-WORTHY 5KW DATA       ")
@@ -30,6 +36,8 @@ def read_eco_worthy_metrics():
         print(f"🔋 Battery Level:    {battery_soc}%")
         print(f"☀️ Solar Today:     {solar_today} kWh")
         print(f"⚡ Current PV Power: {solar_watts} W")
+        print(f"🔌 PV Voltage:      {pv_volts} V")
+        print(f"🔌 PV Current:      {pv_amps} A")
         print("=" * 35)
 
     except Exception as e:
