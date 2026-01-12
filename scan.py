@@ -1,40 +1,43 @@
 import minimalmodbus
 import serial
 
-# --- ADJUST THESE FOR YOUR INVERTER ---
+# --- ECO-WORTHY 5KW CONFIG ---
 PORT = '/dev/ttyACM0'
 SLAVE_ID = 1
 
-# EXAMPLE: Settings for Sunsynk/Deye (Change these based on the table above)
-REG_BATTERY_SOC = 184  
-REG_PV_TODAY = 108
-FUNC_CODE = 3 # Try 3 or 4
-# --------------------------------------
+# Addresses based on SRNE/Eco-Worthy Protocol
+REG_BATTERY_SOC = 256  # 0x0100
+REG_PV_TODAY = 275     # 0x0113
+# -----------------------------
 
-def read_solar():
+def read_eco_worthy():
+    # Initialize instrument
     instrument = minimalmodbus.Instrument(PORT, SLAVE_ID)
     instrument.serial.baudrate = 9600
-    instrument.serial.timeout = 1
+    instrument.serial.timeout = 1.0
     instrument.mode = minimalmodbus.MODE_RTU
 
+    print(f"--- Querying Eco-Worthy 5kW on {PORT} ---")
+
     try:
-        # Read Battery SOC
-        # Some inverters require function code 4 (read_input_register)
-        soc = instrument.read_register(REG_BATTERY_SOC, functioncode=FUNC_CODE)
+        # Read SOC (Function code 3 is standard for SRNE/Eco-Worthy)
+        # Scaling is usually 1:1 for SOC
+        soc = instrument.read_register(REG_BATTERY_SOC, functioncode=3)
         
-        # Read PV Today (Assuming 0.1kWh scaling)
-        pv_today = instrument.read_register(REG_PV_TODAY, decimals=1, functioncode=FUNC_CODE)
+        # Read Solar Today 
+        # Register 0x0113 usually returns Wh or 0.1kWh. 
+        # If it returns Wh, we divide by 1000.
+        pv_raw = instrument.read_register(REG_PV_TODAY, functioncode=3)
+        pv_kwh = pv_raw / 10.0 # Adjust to /1000.0 if value seems too high
 
-        print(f"✅ Success!")
-        print(f"Battery Capacity: {soc}%")
-        print(f"Solar Generated Today: {pv_today} kWh")
+        print(f"✅ Connection Successful")
+        print(f"Battery Remained: {soc}%")
+        print(f"Solar Generated Today: {pv_kwh:.2f} kWh")
 
-    except minimalmodbus.IllegalRequestError:
-        print("❌ Error: Illegal Data Address.")
-        print(f"The inverter does not have a register at {REG_BATTERY_SOC}.")
-        print("Action: Check your manual for the 'Modbus RTU Register Map'.")
     except Exception as e:
-        print(f"❌ Communication Error: {e}")
+        print(f"❌ Error: {e}")
+        print("\nTroubleshooting Tip:")
+        print("If you still see 'Illegal Address', try changing REG_BATTERY_SOC to 57345 (0xE001).")
 
 if __name__ == "__main__":
-    read_solar()
+    read_eco_worthy()
