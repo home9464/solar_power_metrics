@@ -1,43 +1,39 @@
 import minimalmodbus
 import serial
+import time
 
-# --- ECO-WORTHY 5KW CONFIG ---
+# --- CONFIG ---
 PORT = '/dev/ttyACM0'
 SLAVE_ID = 1
+BAUD = 9600 # Try 115200 if 9600 continues to fail
 
-# Addresses based on SRNE/Eco-Worthy Protocol
-REG_BATTERY_SOC = 256  # 0x0100
-REG_PV_TODAY = 275     # 0x0113
-# -----------------------------
-
-def read_eco_worthy():
-    # Initialize instrument
+def scan_registers(start, end):
     instrument = minimalmodbus.Instrument(PORT, SLAVE_ID)
-    instrument.serial.baudrate = 9600
-    instrument.serial.timeout = 1.0
+    instrument.serial.baudrate = BAUD
+    instrument.serial.timeout = 0.2  # Short timeout for scanning
     instrument.mode = minimalmodbus.MODE_RTU
+    
+    print(f"--- Scanning {PORT} (Baud: {BAUD}, ID: {SLAVE_ID}) ---")
+    print(f"Range: {start} to {end}\n")
 
-    print(f"--- Querying Eco-Worthy 5kW on {PORT} ---")
-
-    try:
-        # Read SOC (Function code 3 is standard for SRNE/Eco-Worthy)
-        # Scaling is usually 1:1 for SOC
-        soc = instrument.read_register(REG_BATTERY_SOC, functioncode=3)
+    found_any = False
+    for addr in range(start, end + 1):
+        for fc in [3, 4]: # Try both Holding and Input registers
+            try:
+                # We use read_register directly to check for a response
+                val = instrument.read_register(addr, functioncode=fc)
+                print(f"✅ [ADDR {addr}] FC{fc} returned: {val}")
+                found_any = True
+            except Exception:
+                # Silent skip for failed addresses
+                continue
         
-        # Read Solar Today 
-        # Register 0x0113 usually returns Wh or 0.1kWh. 
-        # If it returns Wh, we divide by 1000.
-        pv_raw = instrument.read_register(REG_PV_TODAY, functioncode=3)
-        pv_kwh = pv_raw / 10.0 # Adjust to /1000.0 if value seems too high
+        # Small sleep to prevent flooding the inverter's serial buffer
+        time.sleep(0.01)
 
-        print(f"✅ Connection Successful")
-        print(f"Battery Remained: {soc}%")
-        print(f"Solar Generated Today: {pv_kwh:.2f} kWh")
-
-    except Exception as e:
-        print(f"❌ Error: {e}")
-        print("\nTroubleshooting Tip:")
-        print("If you still see 'Illegal Address', try changing REG_BATTERY_SOC to 57345 (0xE001).")
+    if not found_any:
+        print("❌ No registers responded in this range.")
+        print("Tip: If you get zero hits, swap your A and B wires and run again.")
 
 if __name__ == "__main__":
-    read_eco_worthy()
+    scan_registers(250, 300)
