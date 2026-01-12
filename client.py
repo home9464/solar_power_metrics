@@ -41,7 +41,7 @@ def get_system_summary() -> Union[Dict[str, Any], str, None]:
 
     """
     try:
-        response = requests.get(SERVER_URL, timeout=2)
+        response = requests.get(SERVER_URL, timeout=3)
         response.raise_for_status() # Raises an exception for bad responses (4xx or 5xx) 
         return response.json()
     except requests.exceptions.HTTPError as e:
