@@ -4,7 +4,7 @@ import minimalmodbus
 import time
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Optional
 
 # --- CONFIGURATION ---
@@ -27,12 +27,12 @@ class SolarData(BaseModel):
     load_power_kw: Optional[float] = None
 
 class SystemSummary(BaseModel):
-    total_load_kw: float
-    total_pv_kw: float
-    avg_battery_capacity_percentage: float
-    total_pv_today_kwh: float
-    battery_full_capacity_kwh: float
-    min_battery_percentage_usable: int
+    total_load_kw: float = Field(description="real time load power (kw)")
+    total_pv_kw: float = Field(description="real time pv power (kw)")
+    avg_battery_capacity_percentage: float = Field(description="average battery capacity percentage")
+    total_pv_today_kwh: float = Field(description="total energy generated today (kwh)")
+    battery_full_capacity_kwh: float = Field(description="battery full capacity (kwh)")
+    min_battery_percentage_usable: int = Field(description="min battery percentage usable")
     details: List[SolarData]
 
 app = FastAPI()
