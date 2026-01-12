@@ -103,6 +103,7 @@ async def get_all_metrics():
     async with lock:
         for inv_id in INVERTER_IDS:
             data = get_inverter_data(inv_id)
+            print(f"DEBUG: Inverter {inv_id} data: {data}")
             if data["status"] == "online":
                 results.append(SolarData(
                     inverter_id=inv_id,

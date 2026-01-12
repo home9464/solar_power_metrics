@@ -17,18 +17,14 @@ def read_eco_worthy_metrics():
         # Function code 3, 0 decimals
         battery_soc = instrument.read_register(256, number_of_decimals=0, functioncode=3)
         
-        # 2. Solar Energy Today (Register 61487)
-        # Scaling for SRNE is 0.1 kWh
-        solar_today = instrument.read_register(61487, numberOfDecimals=1, functioncode=3)
+        # 2. Solar Energy Today (Register 275)
+        # Using 1 decimal to convert (e.g.) 150 to 15.0 kWh
+        # Note: If the result looks too small (like 0.1), 
+        # change number_of_decimals to 0 and divide by 1000 manually.
+        solar_today = instrument.read_register(275, number_of_decimals=1, functioncode=3)
         
-        # 3. Solar Input Power (Register 265)
-        solar_watts = instrument.read_register(265, functioncode=3)
-        
-        # 4. PV Voltage (Register 263)
-        pv_volts = instrument.read_register(263, numberOfDecimals=1, functioncode=3)
-        
-        # 5. PV Current (Register 264)
-        pv_amps = instrument.read_register(264, numberOfDecimals=1, functioncode=3)
+        # 3. Solar Input Power (Register 263)
+        solar_watts = instrument.read_register(263, number_of_decimals=0, functioncode=3)
 
         print("=" * 35)
         print(f"       ECO-WORTHY 5KW DATA       ")
@@ -36,8 +32,6 @@ def read_eco_worthy_metrics():
         print(f"🔋 Battery Level:    {battery_soc}%")
         print(f"☀️ Solar Today:     {solar_today} kWh")
         print(f"⚡ Current PV Power: {solar_watts} W")
-        print(f"🔌 PV Voltage:      {pv_volts} V")
-        print(f"🔌 PV Current:      {pv_amps} A")
         print("=" * 35)
 
     except Exception as e:
